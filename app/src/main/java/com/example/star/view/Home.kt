@@ -24,6 +24,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -85,14 +86,14 @@ fun HomePage(
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
-                    title = { Text("Do you want to add a new repair?", fontSize = 16.sp) },
+                    title = { Text("Do you want to add a new activity?", fontSize = 16.sp) },
                     confirmButton = {
                         Button(
                             onClick = {
                                 showDialog = false
                                 showForm = true
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1C))
                         ) {
                             Text("Yes", color = Color.White)
                         }
@@ -125,7 +126,11 @@ fun HomePage(
                         onValueChange = { activityName = it },
                         label = { Text("Activity Name") },
                         modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF16590B),
+                            focusedLabelColor = Color(0xFF16590B)
+                        )
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -140,6 +145,10 @@ fun HomePage(
                             readOnly = true,
                             label = { Text("Activity Category") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF16590B),
+                                focusedLabelColor = Color(0xFF16590B)
+                            ),
                             modifier = Modifier
                                 .menuAnchor()
                                 .fillMaxWidth()
@@ -170,8 +179,7 @@ fun HomePage(
                             activityName = ""
                             activityCategory = ""
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16590B))
                     ) {
                         Text("Create activity", color = Color.White)
                     }
@@ -191,7 +199,7 @@ fun HomePage(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = Color(0xFFD25D1C),
             shape = CircleShape
         ) {
             Icon(Icons.Filled.Add, "Add", tint = Color.White)

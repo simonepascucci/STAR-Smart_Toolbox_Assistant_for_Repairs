@@ -3,6 +3,7 @@ package com.example.star.view
 import android.widget.Toast
 import androidx.annotation.Size
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,7 +49,7 @@ fun LoginPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCo
 
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxSize().background(color = Color.White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -59,15 +60,19 @@ fun LoginPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCo
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Welcome back!", fontSize = 32.sp, fontWeight = FontWeight.Bold)
-        Text(text = "Login to your account")
+        Text(text = "Welcome back!", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Text(text = "Login to your account", color = Color.Black)
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") }
+            label = { Text("Email") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,13 +89,21 @@ fun LoginPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCo
                         passwordVisible = !passwordVisible
                     }
                 )
-            }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
             authViewModel.login(email, password)
         },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF16590B),
+                contentColor = Color.White
+            ),
             enabled = email.isNotEmpty() && password.isNotEmpty()) {
             Text(text = "Login")
         }
@@ -100,7 +113,7 @@ fun LoginPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCo
         Row (modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center) {
             Text(text = "Don't have an account? ", color = Color.Gray)
-            Text(text = " Sign Up", color = Color.Blue,modifier = Modifier.clickable {
+            Text(text = " Sign Up", color = Color(0xFFD25D1C),modifier = Modifier.clickable {
                 navController.navigate(Routes.Register)
             })
         }

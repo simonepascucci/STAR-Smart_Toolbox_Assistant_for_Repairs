@@ -64,14 +64,22 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") }
+            label = { Text("Username") },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -94,7 +102,11 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
                         confirmPasswordVisible = !confirmPasswordVisible
                     }
                 )
-            }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -111,7 +123,11 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
 
-            }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF16590B),
+                focusedLabelColor = Color(0xFF16590B)
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -120,6 +136,10 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
             authViewModel.setUsername(username)
             authViewModel.signup(email, password)
         },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF16590B),
+                contentColor = Color.White
+            ),
             enabled = email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && confirmPassword == password
         ) {
             Text(text = "Register")
@@ -129,7 +149,7 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
         Row (modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center) {
             Text(text = "Already have an account? ", color = Color.Gray)
-            Text(text = " Login", color = Color.Blue,modifier = Modifier.clickable {
+            Text(text = " Login", color = Color(0xFFD25D1C),modifier = Modifier.clickable {
                 navController.navigate(Routes.Login)
             })
         }
