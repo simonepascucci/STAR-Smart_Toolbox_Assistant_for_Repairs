@@ -12,13 +12,6 @@ class AuthViewModel: ViewModel() {
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
-    private val _username = MutableLiveData<String>()
-    val user: LiveData<String> = _username
-
-    fun setUsername(username: String) {
-        _username.value = username
-    }
-
     init {
         checkAuthStatus()
     }
@@ -60,12 +53,18 @@ class AuthViewModel: ViewModel() {
         _authState.value = AuthState.Unauthenticated
     }
 
+    fun getEmail(): String {
+        return auth.currentUser?.email.toString()
+    }
+
 }
 
 
 sealed class AuthState {
-    object Authenticated : AuthState()
-    object Unauthenticated : AuthState()
-    object Loading : AuthState()
+    data object Authenticated : AuthState()
+    data object Unauthenticated : AuthState()
+    data object Loading : AuthState()
     data class Error(val message: String) : AuthState()
 }
+
+

@@ -22,11 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.star.R
 import com.example.star.Routes
+import com.example.star.model.UserRepository
 import com.example.star.viewmodel.AuthState
 import com.example.star.viewmodel.AuthViewModel
+import com.example.star.viewmodel.UserViewModel
 
 @Composable
-fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController) {
+fun RegistrationPage(authViewModel: AuthViewModel, userViewModel: UserViewModel, navController: NavController) {
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -49,7 +51,7 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
 
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -133,7 +135,7 @@ fun RegistrationPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            authViewModel.setUsername(username)
+            userViewModel.addNewUser(email, username)
             authViewModel.signup(email, password)
         },
             colors = ButtonDefaults.buttonColors(

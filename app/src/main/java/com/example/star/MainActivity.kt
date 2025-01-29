@@ -18,10 +18,13 @@ import com.example.star.view.HomePage
 import com.example.star.view.LoginPage
 import com.example.star.view.RegistrationPage
 import com.example.star.viewmodel.AuthViewModel
+import com.example.star.viewmodel.UserViewModel
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
 
         setContent {
@@ -36,6 +39,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen(modifier: Modifier) {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class]
+        val userViewModel = ViewModelProvider(this)[UserViewModel::class]
         val navController = rememberNavController()
         NavHost(
             navController = navController,
@@ -45,10 +49,10 @@ class MainActivity : ComponentActivity() {
                     LoginPage(modifier = Modifier.fillMaxSize(), authViewModel, navController)
                 }
                 composable(Routes.Register) {
-                    RegistrationPage(modifier = Modifier.fillMaxSize(), authViewModel, navController)
+                    RegistrationPage(authViewModel, userViewModel, navController)
                 }
                 composable(Routes.Home) {
-                    HomePage(modifier = Modifier.fillMaxSize(), authViewModel, navController)
+                    HomePage(authViewModel, userViewModel, navController)
                 }
             }
         )
