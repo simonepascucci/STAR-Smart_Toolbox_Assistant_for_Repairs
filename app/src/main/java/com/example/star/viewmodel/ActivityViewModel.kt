@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.star.model.Activity
 import com.example.star.model.ActivityRepository
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 
 class ActivityViewModel : ViewModel() {
@@ -18,6 +19,9 @@ class ActivityViewModel : ViewModel() {
     private val _showForm = MutableLiveData<Boolean>()
     val showForm : LiveData<Boolean> = _showForm
 
+    private val _selectedActivity = MutableLiveData<Activity?>()
+    val selectedActivity : LiveData<Activity?> = _selectedActivity
+
 
     fun getUserActivities(email: String) {
         viewModelScope.launch {
@@ -26,15 +30,14 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
-    fun addNewActivity(name: String, category: String, author: String, collaborators: MutableList<String>, status: String, createdAt: String) {
+    fun addNewActivity(name: String, category: String, author: String, collaborators: MutableList<String>, status: String) {
         viewModelScope.launch {
             activityRepository.addActivity(
                 name = name,
                 category = category,
                 author = author,
                 collaborators = collaborators,
-                status = status,
-                createdAt = createdAt
+                status = status
             )
         }
     }
@@ -44,6 +47,26 @@ class ActivityViewModel : ViewModel() {
     }
     fun disableForm() {
         _showForm.postValue(false)
+    }
+
+    fun selectActivity(activity: Activity) {
+        viewModelScope.launch {
+            _selectedActivity.postValue(activityRepository.selectActivity(activity.name))
+        }
+    }
+
+    fun updateActivity(activityId: String, activityField: String, activityValue: Any) {
+        viewModelScope.launch {
+            activityRepository.updateActivity(activityId, activityField, activityValue)
+            _selectedActivity.postValue(activityRepository.selectActivity(activityId))
+        }
+    }
+
+    fun setCompleted(activityId: String) {
+        viewModelScope.launch {
+            activityRepository.setCompleted(activityId)
+            _selectedActivity.postValue(activityRepository.selectActivity(activityId))
+        }
     }
 
 }

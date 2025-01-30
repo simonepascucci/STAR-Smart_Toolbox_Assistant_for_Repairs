@@ -4,4 +4,5 @@ object Routes {
     var Login = "Login"
     var Register = "Register"
     var Home =  "Home"
+    var Activity = "Activity/{activityId}"
 }

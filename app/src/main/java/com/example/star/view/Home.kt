@@ -1,11 +1,16 @@
 package com.example.star.view
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,14 +24,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +47,7 @@ import com.example.star.viewmodel.UserViewModel
 fun HomePage(
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
+    activityViewModel: ActivityViewModel,
     navController: NavController
 ) {
 
@@ -63,29 +70,23 @@ fun HomePage(
     var showDialog by remember { mutableStateOf(false) }
     val email = authViewModel.getEmail()
 
-    val activityViewModel = ActivityViewModel()
     val showForm = activityViewModel.showForm.observeAsState()
 
-    userViewModel.getUserData(email)
-    val userData = userViewModel.userData.observeAsState()
-
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars)) {
+        // Banner (Top)
+        Banner()
+        // Main Content (Center)
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
+                .padding(horizontal = 24.dp)
+                .padding(top = 90.dp, bottom = 90.dp)
+                .align(Alignment.Center), // Center the content vertically
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // Welcome Header
+            WelcomeHeader(userViewModel, email)
 
-            userData.value?.email?.let {
-                Text(text = "Your Mail: $it")
-            }
-            userData.value?.username?.let {
-                Text(text = "Your Username: $it")
-            }
-
+            // Dialog
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
@@ -112,15 +113,29 @@ fun HomePage(
                 )
             }
 
+            // Content based on showForm
             if (showForm.value == true) {
                 CreateNewActivity(email, activityViewModel)
+            } else {
+                DisplayActivities(email, activityViewModel, navController)
             }
-            else{
-                DisplayActivities(email, activityViewModel)
-            }
-
         }
 
+        // Logout Button (Bottom Center)
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(onClick = {
+                authViewModel.signOut()
+            }) {
+                Text(text = "Logout")
+            }
+        }
+
+        // Floating Action Button (Bottom End)
         FloatingActionButton(
             onClick = { showDialog = true },
             modifier = Modifier
@@ -131,19 +146,34 @@ fun HomePage(
         ) {
             Icon(Icons.Filled.Add, "Add", tint = Color.White)
         }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = {
-                authViewModel.signOut()
-            }) {
-                Text(text = "Logout")
-            }
-        }
     }
 }
 
+@Composable
+fun WelcomeHeader(userViewModel: UserViewModel, email: String) {
+    userViewModel.getUserData(email)
+    val userData = userViewModel.userData.observeAsState()
+    if (userData.value != null && userData.value!!.username != "") {
+        Text(
+            text = "Welcome Back, ${userData.value!!.username}!",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row {
+            Text(
+                text = "Your email: ",
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                color = Color(0xFF16590B)
+            )
+            Text(
+                text = userData.value!!.email,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}

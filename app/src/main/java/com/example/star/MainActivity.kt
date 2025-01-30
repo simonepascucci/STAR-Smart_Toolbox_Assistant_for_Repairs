@@ -13,10 +13,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.star.model.Activity
 import com.example.star.ui.theme.STARTheme
+import com.example.star.view.ActivityPage
 import com.example.star.view.HomePage
 import com.example.star.view.LoginPage
 import com.example.star.view.RegistrationPage
+import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.AuthViewModel
 import com.example.star.viewmodel.UserViewModel
 import com.google.firebase.FirebaseApp
@@ -40,10 +43,11 @@ class MainActivity : ComponentActivity() {
     fun MainScreen(modifier: Modifier) {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class]
         val userViewModel = ViewModelProvider(this)[UserViewModel::class]
+        val activityViewModel = ViewModelProvider(this)[ActivityViewModel::class]
         val navController = rememberNavController()
         NavHost(
             navController = navController,
-            startDestination = Routes.Login,
+            startDestination = Routes.Home,
             builder = {
                 composable(Routes.Login) {
                     LoginPage(modifier = Modifier.fillMaxSize(), authViewModel, navController)
@@ -52,7 +56,10 @@ class MainActivity : ComponentActivity() {
                     RegistrationPage(authViewModel, userViewModel, navController)
                 }
                 composable(Routes.Home) {
-                    HomePage(authViewModel, userViewModel, navController)
+                    HomePage(authViewModel, userViewModel, activityViewModel,navController)
+                }
+                composable(Routes.Activity) {
+                    ActivityPage(activityViewModel, navController)
                 }
             }
         )
