@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.star.model.Activity
 import com.example.star.ui.theme.STARTheme
 import com.example.star.view.ActivityPage
 import com.example.star.view.HomePage
@@ -21,6 +20,7 @@ import com.example.star.view.LoginPage
 import com.example.star.view.RegistrationPage
 import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.AuthViewModel
+import com.example.star.viewmodel.ChatViewModel
 import com.example.star.viewmodel.UserViewModel
 import com.google.firebase.FirebaseApp
 
@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class]
         val userViewModel = ViewModelProvider(this)[UserViewModel::class]
         val activityViewModel = ViewModelProvider(this)[ActivityViewModel::class]
+        val chatViewModel = ViewModelProvider(this)[ChatViewModel::class]
         val navController = rememberNavController()
         NavHost(
             navController = navController,
@@ -59,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     HomePage(authViewModel, userViewModel, activityViewModel,navController)
                 }
                 composable(Routes.Activity) {
-                    ActivityPage(activityViewModel, navController)
+                    ActivityPage(activityViewModel, navController, chatViewModel)
                 }
             }
         )
