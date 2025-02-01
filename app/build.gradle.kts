@@ -66,4 +66,5 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.generativeai)
+    implementation("com.github.jeziellago:compose-markdown:0.2.0")
 }

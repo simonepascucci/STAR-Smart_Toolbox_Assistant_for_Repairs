@@ -1,5 +1,6 @@
 package com.example.star.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -19,10 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Healing
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,11 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.star.R
 import com.example.star.model.GeminiMessageModel
 import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.ChatViewModel
@@ -72,19 +75,19 @@ fun ActivityPage(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Toolbox") },
+                    icon = { Icon(Icons.Default.Build, contentDescription = "Toolbox", modifier = Modifier.size(48.dp))},
                     label = { Text("Toolbox") },
                     selected = selectedItem == 0,
                     onClick = { selectedItem = 0 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Activity Home") },
+                    icon = { Icon(Icons.Filled.Home, contentDescription = "Activity Home", modifier = Modifier.size(48.dp)) },
                     label = { Text("Activity Home") },
                     selected = selectedItem == 1,
                     onClick = { selectedItem = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Info, contentDescription = "Ask Gemini") },
+                    icon = { Icon(painterResource(R.drawable.geministar), contentDescription = "Ask Gemini", modifier = Modifier.size(48.dp)) },
                     label = { Text("Ask Gemini") },
                     selected = selectedItem == 2,
                     onClick = { selectedItem = 2 }
@@ -108,6 +111,9 @@ fun ActivityPage(
                 }
                 if (selectedItem == 2) {
                     GeminiChatPage(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),activityViewModel, chatViewModel)
+                }
+                if (selectedItem == 0) {
+                    ToolboxPage()
                 }
             }
         }
@@ -308,7 +314,12 @@ fun MessageList(modifier: Modifier, messageList: List<GeminiMessageModel>) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(imageVector = Icons.Default.Healing, contentDescription = "Gemini")
+            Image(
+                painter = painterResource(id = R.drawable.geminilogo),
+                contentDescription = "Gemini Logo"
+            )
+            Icon(imageVector = Icons.Default.QuestionAnswer, contentDescription = "Ask Gemini", tint = Color(0xFF627DD9)
+            )
             Text(text = "Let me help you with your repair!")
         }
     }
