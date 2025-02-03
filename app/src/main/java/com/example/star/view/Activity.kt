@@ -75,19 +75,19 @@ fun ActivityPage(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Build, contentDescription = "Toolbox", modifier = Modifier.size(48.dp))},
+                    icon = { Icon(Icons.Default.Build, contentDescription = "Toolbox", modifier = Modifier.size(32.dp))},
                     label = { Text("Toolbox") },
                     selected = selectedItem == 0,
                     onClick = { selectedItem = 0 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Activity Home", modifier = Modifier.size(48.dp)) },
+                    icon = { Icon(Icons.Filled.Home, contentDescription = "Activity Home", modifier = Modifier.size(32.dp)) },
                     label = { Text("Activity Home") },
                     selected = selectedItem == 1,
                     onClick = { selectedItem = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(painterResource(R.drawable.geministar), contentDescription = "Ask Gemini", modifier = Modifier.size(48.dp)) },
+                    icon = { Icon(painterResource(R.drawable.geministar), contentDescription = "Ask Gemini", modifier = Modifier.size(32.dp)) },
                     label = { Text("Ask Gemini") },
                     selected = selectedItem == 2,
                     onClick = { selectedItem = 2 }
@@ -170,6 +170,9 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel) {
                 Text(text = "Author: ${selectedActivity.value!!.author}")
                 Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
                 Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
+            }
+            else{
+                HomePageSensorsReading()
             }
     }
 }
@@ -346,7 +349,8 @@ fun DisplayMessages(messageModel: GeminiMessageModel) {
         Box (
             modifier = Modifier.fillMaxWidth()
         ){
-            Box(modifier = Modifier.align(if (isModel) Alignment.BottomStart else Alignment.BottomEnd)
+            Box(modifier = Modifier
+                .align(if (isModel) Alignment.BottomStart else Alignment.BottomEnd)
                 .padding(
                     start = if (isModel) 0.dp else 70.dp,
                     end = if (isModel) 70.dp else 0.dp,

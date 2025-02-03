@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,13 +28,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.star.view.ToolNameTitle
 import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 @Composable
 fun LevelPage() {
@@ -51,13 +55,9 @@ fun LevelPage() {
             val y = event.values[1]
             val z = event.values[2]
 
-            // Calculate pitch and roll
-            val newPitch = Math.toDegrees(kotlin.math.atan2(x.toDouble(),
-                kotlin.math.sqrt(y * y + z * z).toDouble()
-            )).toFloat()
-            val newRoll = Math.toDegrees(kotlin.math.atan2(y.toDouble(),
-                kotlin.math.sqrt(x * x + z * z).toDouble()
-            )).toFloat()
+            // Calculate pitch and roll (corrected formulas)
+            val newPitch = atan2(y.toDouble(), sqrt(x * x + z * z).toDouble()).toDegrees().toFloat()
+            val newRoll = atan2(-x.toDouble(), sqrt(y * y + z * z).toDouble()).toDegrees().toFloat()
 
             // Update the state variables
             pitch = newPitch
@@ -71,7 +71,11 @@ fun LevelPage() {
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                sensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_UI)
+                sensorManager.registerListener(
+                    sensorEventListener,
+                    accelerometerSensor,
+                    SensorManager.SENSOR_DELAY_UI
+                )
             } else if (event == Lifecycle.Event.ON_PAUSE) {
                 sensorManager.unregisterListener(sensorEventListener)
             }
@@ -92,23 +96,16 @@ fun LevelUI(pitch: Float, roll: Float) {
     val animatedRoll by animateFloatAsState(targetValue = roll, label = "rollAnimation")
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Spirit Level",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+        ToolNameTitle(title = "Spirit Level")
 
         Box(
             modifier = Modifier
                 .size(250.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .background(color = Color(0xFF363737)),
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
@@ -118,7 +115,7 @@ fun LevelUI(pitch: Float, roll: Float) {
 
                 // Draw the outer circle
                 drawCircle(
-                    color = Color.Cyan,
+                    color = Color(0xFF1A8032),
                     radius = radius,
                     center = Offset(centerX, centerY),
                     style = Stroke(width = 5.dp.toPx())
@@ -126,16 +123,16 @@ fun LevelUI(pitch: Float, roll: Float) {
 
                 // Draw the center circle
                 drawCircle(
-                    color = Color.Black,
+                    color = Color(0xFF1A8032),
                     radius = 10.dp.toPx(),
                     center = Offset(centerX, centerY)
                 )
 
-                // Draw the bubble
+                // Draw the bubble (corrected bubble position)
                 val bubbleX = centerX + animatedRoll * (radius / 30)
-                val bubbleY = centerY + animatedPitch * (radius / 30)
+                val bubbleY = centerY - animatedPitch * (radius / 30) // Invert pitch for correct direction
                 drawCircle(
-                    color = Color.Red,
+                    color = Color(0xFFD25D1C),
                     radius = 20.dp.toPx(),
                     center = Offset(bubbleX, bubbleY)
                 )
@@ -154,12 +151,22 @@ fun LevelUI(pitch: Float, roll: Float) {
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 8.dp)
         )
-
+        // Always show one of the two texts
         if (abs(animatedPitch) < 2 && abs(animatedRoll) < 2) {
             Text(
                 text = "Level!",
-                color = Color.Green,
+                color = Color(0xFF1A8032),
                 fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 32.dp)
+            )
+        } else {
+            Text(
+                text = "Not Level",
+                color = Color.Red,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 32.dp)
             )
@@ -169,8 +176,4 @@ fun LevelUI(pitch: Float, roll: Float) {
 
 fun Float.format(digits: Int) = "%.${digits}f".format(this)
 
-@Preview(showBackground = true)
-@Composable
-fun LevelPagePreview() {
-    LevelPage()
-}
+fun Double.toDegrees(): Double = Math.toDegrees(this)
