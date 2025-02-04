@@ -1,6 +1,5 @@
 package com.example.star.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,36 +15,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.star.R
-import com.example.star.model.GeminiMessageModel
+import com.example.star.Routes
 import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.ChatViewModel
 
@@ -66,31 +62,62 @@ fun ActivityPage(
 ) {
 
     var selectedItem by remember { mutableIntStateOf(1) } // 0: Toolbox, 1: Activity Home, 2: Ask Gemini
-    val selectedActivity = activityViewModel.selectedActivity.observeAsState()
 
     Scaffold(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
             Banner()
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = Color(0xFF363737),
+            ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Build, contentDescription = "Toolbox", modifier = Modifier.size(32.dp))},
-                    label = { Text("Toolbox") },
+                    icon = {
+                        Icon(
+                            Icons.Default.Build,
+                            contentDescription = "Toolbox",
+                            modifier = Modifier.size(32.dp),
+                            tint = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)
+                        )
+                    },
+                    label = { Text("Toolbox", color = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)) },
                     selected = selectedItem == 0,
-                    onClick = { selectedItem = 0 }
+                    onClick = { selectedItem = 0 },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color(0xFF505050)
+                    )
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Activity Home", modifier = Modifier.size(32.dp)) },
-                    label = { Text("Activity Home") },
+                    icon = {
+                        Icon(
+                            Icons.Filled.Home,
+                            contentDescription = "Activity Home",
+                            modifier = Modifier.size(32.dp),
+                            tint = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)
+                        )
+                    },
+                    label = { Text("Activity Home", color = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)) },
                     selected = selectedItem == 1,
-                    onClick = { selectedItem = 1 }
+                    onClick = { selectedItem = 1 },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color(0xFF505050)
+                    )
                 )
                 NavigationBarItem(
-                    icon = { Icon(painterResource(R.drawable.geministar), contentDescription = "Ask Gemini", modifier = Modifier.size(32.dp)) },
-                    label = { Text("Ask Gemini") },
+                    icon = {
+                        Icon(
+                            painterResource(R.drawable.geministar),
+                            contentDescription = "Ask Gemini",
+                            modifier = Modifier.size(32.dp),
+                            tint = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)
+                        )
+                    },
+                    label = { Text("Ask Gemini", color = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)) },
                     selected = selectedItem == 2,
-                    onClick = { selectedItem = 2 }
+                    onClick = { selectedItem = 2 },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color(0xFF505050)
+                    )
                 )
             }
         }
@@ -107,7 +134,7 @@ fun ActivityPage(
                     .align(Alignment.TopCenter)
             ) {
                 if (selectedItem == 1) {
-                    ActivityHomePage(activityViewModel)
+                    ActivityHomePage(activityViewModel, navController)
                 }
                 if (selectedItem == 2) {
                     GeminiChatPage(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),activityViewModel, chatViewModel)
@@ -121,7 +148,7 @@ fun ActivityPage(
 }
 
 @Composable
-fun ActivityHomePage(activityViewModel: ActivityViewModel) {
+fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHostController) {
 
     val selectedActivity = activityViewModel.selectedActivity.observeAsState()
 
@@ -173,6 +200,7 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel) {
             }
             else{
                 HomePageSensorsReading()
+                DeleteButton(activityViewModel, navController)
             }
     }
 }
@@ -266,103 +294,70 @@ fun StatusButtons(activityViewModel: ActivityViewModel) {
 }
 
 @Composable
-fun GeminiChatPage(modifier: Modifier, activityViewModel: ActivityViewModel, chatViewModel: ChatViewModel){
-    Column (
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom
-    ){
-        MessageList(modifier = Modifier.weight(1f), messageList = chatViewModel.messageList)
-        MessageInput(onMessageSend = {
-            chatViewModel.sendMessage(it)
-        }, activityViewModel)
+fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostController) {
+    val selectedActivity = activityViewModel.selectedActivity.observeAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    val buttonColor = Color(0xFF505050)
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        TextButton(
+            onClick = { expanded = !expanded },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Color(0xFF363737),
+                containerColor = Color.Transparent,
+            )
+        ) {
+            Text(text = "More settings")
+            Icon(
+                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = "More settings",
+                tint = Color(0xFF363737)
+            )
+        }
+        if (expanded) {
+            TextButton(
+                onClick = { showDialog = true },
+                modifier = Modifier.padding(start = 32.dp),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color.Red,
+                    containerColor = Color.Transparent,
+                )
+            ) {
+                Text(text = "Delete this activity")
+            }
+        }
     }
 
-}
-
-@Composable
-fun MessageInput(onMessageSend: (String) -> Unit, activityViewModel: ActivityViewModel) {
-
-    var message by remember { mutableStateOf(
-        "I'm working in this field: ${activityViewModel.selectedActivity.value!!.category}, \nsince you are very smart, could you help me with this activity: ${activityViewModel.selectedActivity.value!!.name} ?"
-    ) }
-
-    Row (
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.weight(1f),
-            value = message,
-            onValueChange = {
-                message = it
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            containerColor = Color(0xFFEEEEEE),
+            title = { Text("Delete: ${selectedActivity.value!!.name}") },
+            text = { Text("Are you sure you want to delete this activity? This action is irreversible.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        activityViewModel.deleteActivity(selectedActivity.value!!.name)
+                        navController.navigate(Routes.Home)
+                        showDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary) // Neutral color
+                ) {
+                    Text("Delete", color = Color.White)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1C)) // Orange color
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
             }
         )
-        IconButton(onClick = {
-            if (message.isNotEmpty()) {
-                onMessageSend(message)
-                message = ""
-            }
-        }) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "send")
-        }
-    }
-
-}
-
-@Composable
-fun MessageList(modifier: Modifier, messageList: List<GeminiMessageModel>) {
-
-    if (messageList.isEmpty()) {
-        Column (
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.geminilogo),
-                contentDescription = "Gemini Logo"
-            )
-            Icon(imageVector = Icons.Default.QuestionAnswer, contentDescription = "Ask Gemini", tint = Color(0xFF627DD9)
-            )
-            Text(text = "Let me help you with your repair!")
-        }
-    }
-    else{
-        LazyColumn (
-            modifier = modifier.padding(bottom = 8.dp),
-            reverseLayout = true
-        ){
-            items(messageList.reversed()){
-                DisplayMessages(messageModel = it)
-            }
-        }
-    }
-
-}
-
-@Composable
-fun DisplayMessages(messageModel: GeminiMessageModel) {
-    val isModel = messageModel.role == "model"
-
-    Row (
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        Box (
-            modifier = Modifier.fillMaxWidth()
-        ){
-            Box(modifier = Modifier
-                .align(if (isModel) Alignment.BottomStart else Alignment.BottomEnd)
-                .padding(
-                    start = if (isModel) 0.dp else 70.dp,
-                    end = if (isModel) 70.dp else 0.dp,
-                    top = 8.dp,
-                    bottom = 8.dp
-                )
-                .clip(RoundedCornerShape(48f))
-                .background(if (isModel) Color(0xFF16590B) else Color(0xFFD25D1C))
-                .padding(16.dp)
-            ) {
-                Text(text = messageModel.message, fontWeight = FontWeight.W700, color = Color.White)
-            }
-        }
     }
 }

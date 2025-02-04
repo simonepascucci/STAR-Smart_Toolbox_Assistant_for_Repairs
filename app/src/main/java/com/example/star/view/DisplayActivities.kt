@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -313,7 +314,7 @@ fun ActivityCard(activity: Activity, navController: NavController, activityViewM
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16590B)),
                     modifier = Modifier.weight(1f) // Keep this if you need the weight
                 ) {
-                    Text(text = "Enter Activity")
+                    Text(text = "Enter Activity", textAlign = TextAlign.End)
                 }
             }
         }

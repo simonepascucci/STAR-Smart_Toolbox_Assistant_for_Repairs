@@ -87,4 +87,12 @@ class ActivityRepository {
             Log.e("ActivityRepository", "Error setting completed activity $activityId", e)
         }
     }
+
+    suspend fun deleteActivity(activityId: String) {
+        try {
+            db.collection("activities").document(activityId).delete().await()
+        }catch (e: Exception){
+            Log.e("ActivityRepository", "Error deleting activity $activityId", e)
+        }
+    }
 }

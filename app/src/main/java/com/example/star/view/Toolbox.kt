@@ -43,9 +43,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import com.example.star.R
 import com.example.star.view.tools.LevelPage
+import com.example.star.view.tools.RulerPage
+import com.example.star.view.tools.VibrationMeterPage
 
 sealed class ToolIcon {
     data class DrawableIcon(val id: Int) : ToolIcon()
@@ -89,7 +90,7 @@ fun ToolboxPage() {
     val tools = listOf(
         ToolItem("Level", ToolIcon.DrawableIcon(R.drawable.levelicon)),
         ToolItem("Ruler", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
-        ToolItem("Angle", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
+        ToolItem("Vibration Meter", ToolIcon.DrawableIcon(R.drawable.vibrationicon)),
         ToolItem("Compass", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
         ToolItem("Plumb", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
         ToolItem(
@@ -139,8 +140,9 @@ fun ToolboxPage() {
                 }
                 when (selectedTool!!.name) {
                     "Level" -> LevelPage()
-                    /*"Ruler" -> RulerPage()
-                    "Angle" -> AnglePage()
+                    "Vibration Meter" -> VibrationMeterPage()
+                    "Ruler" -> RulerPage()
+                    /*"Angle" -> AnglePage()
                     "Compass" -> CompassPage()
                     "Plumb" -> PlumbPage()
                     "Info" -> InfoPage()*/
@@ -194,7 +196,7 @@ fun ToolButton(tool: ToolItem, onToolClick: (ToolItem) -> Unit) {
         ) {
             when (val icon = tool.icon) {
                 is ToolIcon.DrawableIcon -> {
-                    Image(
+                    Icon(
                         painter = painterResource(id = icon.id),
                         contentDescription = tool.name,
                         modifier = Modifier.size(64.dp)

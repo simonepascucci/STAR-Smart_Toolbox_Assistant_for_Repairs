@@ -130,7 +130,7 @@ fun LevelUI(pitch: Float, roll: Float) {
 
                 // Draw the bubble (corrected bubble position)
                 val bubbleX = centerX + animatedRoll * (radius / 30)
-                val bubbleY = centerY - animatedPitch * (radius / 30) // Invert pitch for correct direction
+                val bubbleY = centerY - animatedPitch * (radius / 30)
                 drawCircle(
                     color = Color(0xFFD25D1C),
                     radius = 20.dp.toPx(),

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.star.model.Activity
 import com.example.star.model.ActivityRepository
 import com.google.firebase.Timestamp
@@ -66,6 +67,13 @@ class ActivityViewModel : ViewModel() {
         viewModelScope.launch {
             activityRepository.setCompleted(activityId)
             _selectedActivity.postValue(activityRepository.selectActivity(activityId))
+        }
+    }
+
+    fun deleteActivity(activityId: String) {
+        viewModelScope.launch {
+            activityRepository.deleteActivity(activityId)
+            _selectedActivity.postValue(null)
         }
     }
 

@@ -1,13 +1,16 @@
 package com.example.star.view
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -72,7 +75,9 @@ fun HomePage(
 
     val showForm = activityViewModel.showForm.observeAsState()
 
-    Box(modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .windowInsetsPadding(WindowInsets.statusBars)) {
         // Banner (Top)
         Banner()
         // Main Content (Center)
@@ -89,6 +94,7 @@ fun HomePage(
             // Dialog
             if (showDialog) {
                 AlertDialog(
+                    containerColor = Color(0xFFC5C5C5),
                     onDismissRequest = { showDialog = false },
                     title = { Text("Do you want to add a new activity?", fontSize = 16.sp) },
                     confirmButton = {
@@ -121,30 +127,33 @@ fun HomePage(
             }
         }
 
-        // Logout Button (Bottom Center)
-        Column(
+        // Logout and Floating Action Button (Bottom)
+        Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .windowInsetsPadding(WindowInsets.navigationBars) // Add padding for navigation bars
+                .padding(16.dp), // Add some padding around the buttons
+            horizontalArrangement = Arrangement.SpaceBetween, // Space between the buttons
+            verticalAlignment = Alignment.Bottom
         ) {
-            Button(onClick = {
-                authViewModel.signOut()
-            }) {
+            // Logout Button (Bottom Start)
+            Button(
+                onClick = { authViewModel.signOut() },
+                modifier = Modifier.padding(start = 16.dp)
+            ) {
                 Text(text = "Logout")
             }
-        }
 
-        // Floating Action Button (Bottom End)
-        FloatingActionButton(
-            onClick = { showDialog = true },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = Color(0xFFD25D1C),
-            shape = CircleShape
-        ) {
-            Icon(Icons.Filled.Add, "Add", tint = Color.White)
+            // Floating Action Button (Bottom End)
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                containerColor = Color(0xFFD25D1C),
+                shape = CircleShape,
+                modifier = Modifier.padding(end = 16.dp)
+            ) {
+                Icon(Icons.Filled.Add, "Add", tint = Color.White)
+            }
         }
     }
 }
