@@ -3,6 +3,7 @@ package com.example.star.model
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
@@ -37,10 +38,34 @@ class ActivityRepository {
                     Log.w("Firestore", "Activity object is null for document: ${document.id}")
                 }
             }
+
         } catch (e: Exception) {
             Log.e("Firestore", "Error fetching activities", e)
         }
         return activities
+    }
+
+    suspend fun fetchUserCollaborations(email: String): MutableList<Activity> {
+        val activities = mutableListOf<Activity>()
+        return try {
+            val querySnapshot = db.collection("activities")
+                .whereArrayContains("collaborators", email)
+                .get()
+                .await()
+
+            querySnapshot.documents.forEach { document ->
+                val act = document.toObject(Activity::class.java)
+                if (act != null) {
+                    activities.add(act)
+                } else {
+                    Log.w("Firestore", "Activity object is null for document: ${document.id}")
+                }
+            }
+            activities
+        }catch (e: Exception) {
+            Log.e("Firestore", "Error fetching collaborations", e)
+            activities
+        }
     }
 
 
@@ -76,6 +101,32 @@ class ActivityRepository {
         }catch (e: Exception){
             Log.e("ActivityRepository", "Error selecting activity $activityId", e)
             Activity()
+        }
+    }
+
+    suspend fun addCollaborator(activityId: String, collaborator: String) : Boolean{
+        return try {
+            val userSnapshot = db.collection("users").whereEqualTo("email", collaborator).get().await()
+            if (!userSnapshot.isEmpty) {
+                db.collection("activities").document(activityId)
+                    .update("collaborators", FieldValue.arrayUnion(collaborator)).await()
+                true
+            }else{
+                Log.e("ActivityRepository", "No user with this email: $collaborator")
+                false
+            }
+        }catch (e: Exception) {
+            Log.e("ActivityRepository", "Error adding collaborator to activity $activityId", e)
+            false
+        }
+    }
+
+    suspend fun removeCollaboration(activityId: String, collaborator: String) {
+        try {
+            db.collection("activities").document(activityId)
+                .update("collaborators", FieldValue.arrayRemove(collaborator)).await()
+        }catch (e: Exception){
+            Log.e("ActivityRepository", "Error removing collaborator from activity $activityId", e)
         }
     }
 

@@ -4,10 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.star.model.Activity
 import com.example.star.model.ActivityRepository
-import com.google.firebase.Timestamp
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ActivityViewModel : ViewModel() {
@@ -17,17 +16,28 @@ class ActivityViewModel : ViewModel() {
     private val _activityData = MutableLiveData<MutableList<Activity>>()
     val activityData : LiveData<MutableList<Activity>> = _activityData
 
+    private val _collaborationsData = MutableLiveData<MutableList<Activity>>()
+    val collaborationsData : LiveData<MutableList<Activity>> = _collaborationsData
+
     private val _showForm = MutableLiveData<Boolean>()
     val showForm : LiveData<Boolean> = _showForm
 
     private val _selectedActivity = MutableLiveData<Activity?>()
     val selectedActivity : LiveData<Activity?> = _selectedActivity
 
+    val addCollaboratorResult = MutableStateFlow<AddCollaboratorResult>(AddCollaboratorResult.Idle)
 
     fun getUserActivities(email: String) {
         viewModelScope.launch {
             val activities = activityRepository.fetchUserActivities(email)
             _activityData.postValue(activities)
+        }
+    }
+
+    fun getUserCollaborations(email: String) {
+        viewModelScope.launch {
+            val collaborations = activityRepository.fetchUserCollaborations(email)
+            _collaborationsData.postValue(collaborations)
         }
     }
 
@@ -63,6 +73,26 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+    fun addCollaborator(activityId: String, collaborator: String) {
+        viewModelScope.launch {
+            addCollaboratorResult.value = AddCollaboratorResult.Loading
+            val result = activityRepository.addCollaborator(activityId, collaborator)
+            _selectedActivity.postValue(activityRepository.selectActivity(activityId))
+            addCollaboratorResult.value = if (result) {
+                AddCollaboratorResult.Success
+            } else {
+                AddCollaboratorResult.Failure
+            }
+        }
+    }
+
+    fun removeCollaboration(activityId: String, collaborator: String) {
+        viewModelScope.launch {
+            activityRepository.removeCollaboration(activityId, collaborator)
+            _selectedActivity.postValue(activityRepository.selectActivity(activityId))
+        }
+    }
+
     fun setCompleted(activityId: String) {
         viewModelScope.launch {
             activityRepository.setCompleted(activityId)
@@ -77,4 +107,11 @@ class ActivityViewModel : ViewModel() {
         }
     }
 
+}
+
+sealed class AddCollaboratorResult {
+    object Success : AddCollaboratorResult()
+    object Failure : AddCollaboratorResult()
+    object Loading : AddCollaboratorResult()
+    object Idle : AddCollaboratorResult()
 }

@@ -140,7 +140,7 @@ fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
                     name = activityName,
                     category = activityCategory,
                     author = email,
-                    collaborators = mutableListOf(email),
+                    collaborators = mutableListOf(),
                     status = "STARTED"
                 )
 
@@ -164,11 +164,13 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
 
     // Observe the LiveData and get the list of activities
     val userActivities by activityViewModel.activityData.observeAsState(initial = emptyList())
+    val userCollaborations by activityViewModel.collaborationsData.observeAsState(initial = emptyList())
 
     // Function to handle the refresh action
     fun refreshActivities() {
         isRefreshing = true
         activityViewModel.getUserActivities(email)
+        activityViewModel.getUserCollaborations(email)
         isRefreshing = false
     }
 
@@ -204,11 +206,11 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp) // Add spacing between items
                 ) {
                     item {
-                        Text(text = "You currently have ${userActivities.size} activities:", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "You currently have ${userActivities.size} activities:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                     if (userActivities.isEmpty()) {
                         item {
@@ -221,6 +223,18 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
                         }
                     } else {
                         items(userActivities) { activity ->
+                            ActivityCard(activity = activity, navController, activityViewModel)
+                        }
+                    }
+                    if (userCollaborations.isEmpty()) {
+                        item {
+                            Text(text = "You are not collaborating in any activity.")
+                        }
+                    } else {
+                        item {
+                            Text(text = "You are collaborating in the following activities:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        }
+                        items(userCollaborations) { activity ->
                             ActivityCard(activity = activity, navController, activityViewModel)
                         }
                     }
@@ -239,7 +253,6 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
 fun ActivityCard(activity: Activity, navController: NavController, activityViewModel: ActivityViewModel) {
     // State to control the visibility of extra info
     var showMoreInfo by remember { mutableStateOf(false) }
-    val activities = activityViewModel.activityData.observeAsState()
 
     Card(
         modifier = Modifier
@@ -279,7 +292,7 @@ fun ActivityCard(activity: Activity, navController: NavController, activityViewM
                 Column {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(text = "Author: ${activity.author}")
-                    if (activity.collaborators.size > 1)  Text(text = "Collaborators: ${activity.collaborators.joinToString(", ")}")
+                    if (activity.collaborators.size > 0)  Text(text = "Collaborators: ${activity.collaborators.joinToString(", ")}")
                     Text(text = "Created: ${activity.createdAt.toDate()}")
                     if (activity.status == "COMPLETED") Text(text = "Completed: ${activity.completedAt!!.toDate()}")
                 }

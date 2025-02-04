@@ -1,6 +1,6 @@
 package com.example.star.view
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +53,7 @@ import androidx.navigation.NavHostController
 import com.example.star.R
 import com.example.star.Routes
 import com.example.star.viewmodel.ActivityViewModel
+import com.example.star.viewmodel.AuthViewModel
 import com.example.star.viewmodel.ChatViewModel
 
 @Composable
@@ -157,11 +159,14 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHos
         return
     }
 
-        Column (
+    val author = selectedActivity.value!!.author
+    val currentUser = AuthViewModel().getEmail()
+
+    Column (
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -183,7 +188,20 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHos
 
             }
         }
-            StatusButtons(activityViewModel)
+            if (author == currentUser) {
+                StatusButtons(activityViewModel)
+            }
+            else{
+                Text(
+                    text = "Only the owner can change the activity status",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
+            }
+
 
             if (selectedActivity.value!!.status == "COMPLETED") {
                 Text(
@@ -195,12 +213,14 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHos
                 Text(text = "Here are your activity details:")
                 Text(text = "Category: ${selectedActivity.value!!.category}")
                 Text(text = "Author: ${selectedActivity.value!!.author}")
+                Text(text = "Collaborators: ${selectedActivity.value!!.collaborators}")
                 Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
                 Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
             }
             else{
                 HomePageSensorsReading()
-                DeleteButton(activityViewModel, navController)
+                Collaborators(activityViewModel)
+                MoreOptions(activityViewModel, navController)
             }
     }
 }
@@ -294,15 +314,17 @@ fun StatusButtons(activityViewModel: ActivityViewModel) {
 }
 
 @Composable
-fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostController) {
+fun MoreOptions(activityViewModel: ActivityViewModel, navController: NavHostController) {
     val selectedActivity = activityViewModel.selectedActivity.observeAsState()
-    var showDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showRemoveCollabDialog by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-    val buttonColor = Color(0xFF505050)
+    val activityIsMine = selectedActivity.value!!.author == AuthViewModel().getEmail()
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center
     ) {
         TextButton(
             onClick = { expanded = !expanded },
@@ -319,22 +341,37 @@ fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostCon
             )
         }
         if (expanded) {
-            TextButton(
-                onClick = { showDialog = true },
-                modifier = Modifier.padding(start = 32.dp),
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Red,
-                    containerColor = Color.Transparent,
-                )
-            ) {
-                Text(text = "Delete this activity")
+            if (activityIsMine) {
+                OutlinedButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Red,
+                        containerColor = Color.Transparent,
+                    ),
+                    border = BorderStroke(1.dp, Color.Red)
+                ) {
+                    Text(text = "Delete this activity")
+                }
+            } else {
+                OutlinedButton(
+                    onClick = { showRemoveCollabDialog = true },
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Red,
+                        containerColor = Color.Transparent,
+                    ),
+                    border = BorderStroke(1.dp, Color.Red)
+                ) {
+                    Text(text = "Remove collaboration")
+                }
             }
         }
     }
 
-    if (showDialog) {
+    if (showDeleteDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { showDeleteDialog = false },
             containerColor = Color(0xFFEEEEEE),
             title = { Text("Delete: ${selectedActivity.value!!.name}") },
             text = { Text("Are you sure you want to delete this activity? This action is irreversible.") },
@@ -343,7 +380,7 @@ fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostCon
                     onClick = {
                         activityViewModel.deleteActivity(selectedActivity.value!!.name)
                         navController.navigate(Routes.Home)
-                        showDialog = false
+                        showDeleteDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary) // Neutral color
                 ) {
@@ -352,7 +389,34 @@ fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostCon
             },
             dismissButton = {
                 Button(
-                    onClick = { showDialog = false },
+                    onClick = { showDeleteDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1C)) // Orange color
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
+            }
+        )
+    }
+    if (showRemoveCollabDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveCollabDialog = false },
+            containerColor = Color(0xFFEEEEEE),
+            text = { Text("Are you sure you want to remove your collaboration in: ${selectedActivity.value!!.name}?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        activityViewModel.removeCollaboration(selectedActivity.value!!.name, AuthViewModel().getEmail())
+                        navController.navigate(Routes.Home)
+                        showRemoveCollabDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary) // Neutral color
+                ) {
+                    Text("Delete", color = Color.White)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showRemoveCollabDialog = false },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1C)) // Orange color
                 ) {
                     Text("Cancel", color = Color.White)
@@ -361,3 +425,4 @@ fun DeleteButton(activityViewModel: ActivityViewModel, navController: NavHostCon
         )
     }
 }
+
