@@ -141,7 +141,7 @@ fun Collaborators(activityViewModel: ActivityViewModel) {
         val author = selectedActivity.value!!.author
         val currentUser = AuthViewModel().getEmail()
         if (author != currentUser) {
-            Text(text = "Ask the owner to invite a collaborator!", color = Color.Gray)
+            Text(text = "Ask the owner to add a collaborator!", color = Color.Gray, fontSize = 14.sp)
         }else{
             Row(
                 verticalAlignment = Alignment.CenterVertically

@@ -3,6 +3,7 @@ package com.example.star.view
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -158,15 +159,15 @@ fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navController: NavController) {
-    // State to track if the refresh is in progress
+fun DisplayActivities(
+    email: String,
+    activityViewModel: ActivityViewModel,
+    navController: NavController
+) {
     var isRefreshing by remember { mutableStateOf(false) }
-
-    // Observe the LiveData and get the list of activities
     val userActivities by activityViewModel.activityData.observeAsState(initial = emptyList())
     val userCollaborations by activityViewModel.collaborationsData.observeAsState(initial = emptyList())
 
-    // Function to handle the refresh action
     fun refreshActivities() {
         isRefreshing = true
         activityViewModel.getUserActivities(email)
@@ -174,12 +175,10 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
         isRefreshing = false
     }
 
-    // Trigger the fetch of activities when the composable is first composed
     LaunchedEffect(key1 = true) {
         refreshActivities()
     }
 
-    // Create a PullRefreshState
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = { refreshActivities() }
@@ -202,40 +201,60 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
                     CircularProgressIndicator()
                 }
             } else {
-                // Use LazyColumn for scrollable list
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp) // Add spacing between items
-                ) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
-                        Text(text = "You currently have ${userActivities.size} activities:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "You currently have ${userActivities.size} activities:",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(8.dp)
+                        )
                     }
                     if (userActivities.isEmpty()) {
                         item {
-                            Text(text = "No activities found.")
-                            Row {
+                            Text(text = "No activities found.", modifier = Modifier.padding(8.dp))
+                            Row(modifier = Modifier.padding(8.dp)) {
                                 Text(text = "Click on ")
-                                Icon(imageVector = Icons.Default.AddCircle, contentDescription = "info", tint = Color(0xFFD25D1C))
+                                Icon(
+                                    imageVector = Icons.Default.AddCircle,
+                                    contentDescription = "info",
+                                    tint = Color(0xFFD25D1C)
+                                )
                                 Text(text = " to add a new activity.")
                             }
                         }
                     } else {
-                        items(userActivities) { activity ->
-                            ActivityCard(activity = activity, navController, activityViewModel)
+                        item {
+                            Carousel(
+                                items = userActivities,
+                                navController = navController,
+                                activityViewModel = activityViewModel
+                            )
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "You are collaborating in the following activities:",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(8.dp)
+                        )
                     }
                     if (userCollaborations.isEmpty()) {
                         item {
-                            Text(text = "You are not collaborating in any activity.")
+                            Text(
+                                text = "You are not collaborating in any activity.",
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
                     } else {
                         item {
-                            Text(text = "You are collaborating in the following activities:", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        }
-                        items(userCollaborations) { activity ->
-                            ActivityCard(activity = activity, navController, activityViewModel)
+                            Carousel(
+                                items = userCollaborations,
+                                navController = navController,
+                                activityViewModel = activityViewModel
+                            )
                         }
                     }
                 }
@@ -250,8 +269,11 @@ fun DisplayActivities(email: String, activityViewModel: ActivityViewModel, navCo
 }
 
 @Composable
-fun ActivityCard(activity: Activity, navController: NavController, activityViewModel: ActivityViewModel) {
-    // State to control the visibility of extra info
+fun ActivityCard(
+    activity: Activity,
+    navController: NavController,
+    activityViewModel: ActivityViewModel
+) {
     var showMoreInfo by remember { mutableStateOf(false) }
 
     Card(
@@ -270,29 +292,24 @@ fun ActivityCard(activity: Activity, navController: NavController, activityViewM
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    // Title (Activity Name)
                     Text(
                         text = activity.name,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-
-                    // Category
                     Text(
                         text = "Category: ${activity.category}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                // Status Indicator
                 StatusIndicator(status = activity.status)
             }
 
-            // Animated visibility for extra info
             AnimatedVisibility(visible = showMoreInfo) {
                 Column {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(text = "Author: ${activity.author}")
-                    if (activity.collaborators.size > 0)  Text(text = "Collaborators: ${activity.collaborators.joinToString(", ")}")
+                    if (activity.collaborators.isNotEmpty()) Text(text = "Collaborators: ${activity.collaborators.joinToString(", ")}")
                     Text(text = "Created: ${activity.createdAt.toDate()}")
                     if (activity.status == "COMPLETED") Text(text = "Completed: ${activity.completedAt!!.toDate()}")
                 }
@@ -300,35 +317,64 @@ fun ActivityCard(activity: Activity, navController: NavController, activityViewM
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Buttons Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp), // Space between buttons
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Show More Info Button
-                TextButton (
+                TextButton(
                     onClick = { showMoreInfo = !showMoreInfo },
-                    modifier = Modifier.weight(1f) // Take up available space
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Row (verticalAlignment = Alignment.CenterVertically){
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(imageVector = Icons.Default.Info, contentDescription = "info", tint = Color(0xFFD25D1C))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(text = if (showMoreInfo) "Show Less" else "Show Details", color = Color(0xFFD25D1C))
                     }
                 }
 
-                // Enter Activity Button
                 Button(
                     onClick = {
                         activityViewModel.selectActivity(activity)
                         navController.navigate(route = Routes.Activity)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16590B)),
-                    modifier = Modifier.weight(1f) // Keep this if you need the weight
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text(text = "Enter Activity", textAlign = TextAlign.End)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun Carousel(
+    items: List<Activity>,
+    navController: NavController,
+    activityViewModel: ActivityViewModel
+) {
+    val scrollState = rememberScrollState()
+    val cardWidth = 300.dp
+    val cardPadding = 8.dp
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items.forEach { activity ->
+            Box(
+                modifier = Modifier
+                    .width(cardWidth)
+                    .padding(horizontal = cardPadding)
+            ) {
+                ActivityCard(
+                    activity = activity,
+                    navController = navController,
+                    activityViewModel = activityViewModel
+                )
             }
         }
     }

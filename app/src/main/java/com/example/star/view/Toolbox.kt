@@ -3,7 +3,8 @@ package com.example.star.view
 import android.content.Context
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
-import androidx.compose.foundation.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,8 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.star.R
+import com.example.star.view.tools.ARDistance
+import com.example.star.view.tools.ARRuler
 import com.example.star.view.tools.LevelPage
-import com.example.star.view.tools.RulerPage
 import com.example.star.view.tools.VibrationMeterPage
 
 sealed class ToolIcon {
@@ -55,6 +57,7 @@ sealed class ToolIcon {
 
 data class ToolItem(val name: String, val icon: ToolIcon)
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun ToolboxPage() {
     var torchEnabled by remember { mutableStateOf(false) }
@@ -91,7 +94,7 @@ fun ToolboxPage() {
         ToolItem("Level", ToolIcon.DrawableIcon(R.drawable.levelicon)),
         ToolItem("Ruler", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
         ToolItem("Vibration Meter", ToolIcon.DrawableIcon(R.drawable.vibrationicon)),
-        ToolItem("Compass", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
+        ToolItem("Distance", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
         ToolItem("Plumb", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
         ToolItem(
             "Flashlight",
@@ -141,11 +144,8 @@ fun ToolboxPage() {
                 when (selectedTool!!.name) {
                     "Level" -> LevelPage()
                     "Vibration Meter" -> VibrationMeterPage()
-                    "Ruler" -> RulerPage()
-                    /*"Angle" -> AnglePage()
-                    "Compass" -> CompassPage()
-                    "Plumb" -> PlumbPage()
-                    "Info" -> InfoPage()*/
+                    "Ruler" -> ARRuler()
+                    "Distance" -> ARDistance()
                 }
             }
         }
@@ -242,6 +242,7 @@ fun ToolNameTitle(title: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Preview(showBackground = true)
 @Composable
 fun ToolboxPagePreview() {
