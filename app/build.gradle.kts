@@ -67,4 +67,6 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.generativeai)
     implementation (libs.arsceneview)
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.converter.gson)
 }

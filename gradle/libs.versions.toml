@@ -1,6 +1,7 @@
 [versions]
 agp = "8.8.0"
 arsceneview = "2.2.1"
+converterGson = "2.11.0"
 kotlin = "2.0.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -10,6 +11,7 @@ activityCompose = "1.10.0"
 composeBom = "2025.01.01"
 materialIconsExtended = "1.7.7"
 navigationCompose = "2.8.6"
+retrofit = "2.11.0"
 runtimeLivedata = "1.7.7"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.1.0"
@@ -24,6 +26,7 @@ filamentAndroid = "1.17.1"
 androidx-material = { module = "androidx.compose.material:material", version.ref = "materialIconsExtended" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -45,6 +48,7 @@ androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycl
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 arsceneview = { module = "io.github.sceneview:arsceneview", version.ref = "arsceneview" }
+retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,13 +42,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.star.R
 import com.example.star.view.tools.ARDistance
 import com.example.star.view.tools.ARRuler
 import com.example.star.view.tools.LevelPage
+import com.example.star.view.tools.PhotosPage
 import com.example.star.view.tools.VibrationMeterPage
 
 sealed class ToolIcon {
@@ -92,10 +96,10 @@ fun ToolboxPage() {
 
     val tools = listOf(
         ToolItem("Level", ToolIcon.DrawableIcon(R.drawable.levelicon)),
-        ToolItem("Ruler", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
+        ToolItem("Measuring Tape", ToolIcon.DrawableIcon(R.drawable.metericon)),
         ToolItem("Vibration Meter", ToolIcon.DrawableIcon(R.drawable.vibrationicon)),
-        ToolItem("Distance", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
-        ToolItem("Plumb", ToolIcon.VectorIcon(Icons.Filled.QuestionMark)),
+        ToolItem("Distance", ToolIcon.DrawableIcon(R.drawable.distanceicon)),
+        ToolItem("Photos", ToolIcon.VectorIcon(Icons.Filled.PhotoLibrary)),
         ToolItem(
             "Flashlight",
             ToolIcon.VectorIcon(if (torchEnabled) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff)
@@ -112,7 +116,21 @@ fun ToolboxPage() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (selectedTool == null) {
-            Text(text = "Toolbox", modifier = Modifier.padding(bottom = 16.dp))
+            Card(
+                modifier = Modifier
+                    .padding(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Text(
+                    text = "Toolbox",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
             ToolboxGrid(tools = tools) { tool ->
                 if (tool.name != "Flashlight") selectedTool = tool
                 else {
@@ -146,6 +164,7 @@ fun ToolboxPage() {
                     "Vibration Meter" -> VibrationMeterPage()
                     "Ruler" -> ARRuler()
                     "Distance" -> ARDistance()
+                    "Photos" -> PhotosPage()
                 }
             }
         }

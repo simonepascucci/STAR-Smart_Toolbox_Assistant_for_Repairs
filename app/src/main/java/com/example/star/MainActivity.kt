@@ -1,9 +1,11 @@
 package com.example.star
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,6 +23,7 @@ import com.example.star.view.RegistrationPage
 import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.AuthViewModel
 import com.example.star.viewmodel.ChatViewModel
+import com.example.star.viewmodel.ElapsedTimeViewModel
 import com.example.star.viewmodel.UserViewModel
 import com.google.firebase.FirebaseApp
 
@@ -39,12 +42,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @Composable
     fun MainScreen(modifier: Modifier) {
         val authViewModel = ViewModelProvider(this)[AuthViewModel::class]
         val userViewModel = ViewModelProvider(this)[UserViewModel::class]
         val activityViewModel = ViewModelProvider(this)[ActivityViewModel::class]
         val chatViewModel = ViewModelProvider(this)[ChatViewModel::class]
+        val elapsedTimeViewModel = ViewModelProvider(this)[ElapsedTimeViewModel::class]
         val navController = rememberNavController()
         NavHost(
             navController = navController,
@@ -60,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     HomePage(authViewModel, userViewModel, activityViewModel,navController)
                 }
                 composable(Routes.Activity) {
-                    ActivityPage(activityViewModel, navController, chatViewModel)
+                    ActivityPage(activityViewModel, navController, chatViewModel, elapsedTimeViewModel)
                 }
             }
         )

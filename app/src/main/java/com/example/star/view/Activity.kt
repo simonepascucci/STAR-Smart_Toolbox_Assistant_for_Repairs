@@ -1,5 +1,7 @@
 package com.example.star.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
@@ -55,12 +58,15 @@ import com.example.star.Routes
 import com.example.star.viewmodel.ActivityViewModel
 import com.example.star.viewmodel.AuthViewModel
 import com.example.star.viewmodel.ChatViewModel
+import com.example.star.viewmodel.ElapsedTimeViewModel
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun ActivityPage(
     activityViewModel: ActivityViewModel,
     navController: NavHostController,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    elapsedTimeViewModel: ElapsedTimeViewModel
 ) {
 
     var selectedItem by remember { mutableIntStateOf(1) } // 0: Toolbox, 1: Activity Home, 2: Ask Gemini
@@ -136,7 +142,7 @@ fun ActivityPage(
                     .align(Alignment.TopCenter)
             ) {
                 if (selectedItem == 1) {
-                    ActivityHomePage(activityViewModel, navController)
+                    ActivityHomePage(activityViewModel, navController, elapsedTimeViewModel)
                 }
                 if (selectedItem == 2) {
                     GeminiChatPage(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),activityViewModel, chatViewModel)
@@ -150,7 +156,11 @@ fun ActivityPage(
 }
 
 @Composable
-fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHostController) {
+fun ActivityHomePage(
+    activityViewModel: ActivityViewModel,
+    navController: NavHostController,
+    elapsedTimeViewModel: ElapsedTimeViewModel
+) {
 
     val selectedActivity = activityViewModel.selectedActivity.observeAsState()
 
@@ -171,7 +181,7 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHos
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -217,10 +227,25 @@ fun ActivityHomePage(activityViewModel: ActivityViewModel, navController: NavHos
                 Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
                 Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
             }
-            else{
-                HomePageSensorsReading()
-                Collaborators(activityViewModel)
-                MoreOptions(activityViewModel, navController)
+            else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    item {
+                        elapsedTimeViewModel.resetElapsedTime()
+                        ElapsedTime(activityViewModel, elapsedTimeViewModel)
+                    }
+                    item {
+                        HomePageSensorsReading()
+                    }
+                    item {
+                        Collaborators(activityViewModel)
+                    }
+                    item {
+                        MoreOptions(activityViewModel, navController)
+                    }
+                }
             }
     }
 }
