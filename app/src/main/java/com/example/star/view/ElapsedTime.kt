@@ -17,7 +17,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +67,7 @@ fun ElapsedTime(
             }
 
             NetworkResponse.Loading -> {
+                Spacer(modifier = Modifier.height(16.dp))
                 CircularProgressIndicator()
             }
 
@@ -87,6 +92,69 @@ fun ElapsedTime(
 }
 
 @Composable
+fun CompletionTime(
+    activityViewModel: ActivityViewModel,
+    elapsedTimeViewModel: ElapsedTimeViewModel
+) {
+    val selectedActivity = activityViewModel.selectedActivity.observeAsState()
+    val elapsedTime = elapsedTimeViewModel.elapsedTimeResult.observeAsState()
+    var checked by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (!checked) {
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF16590B),
+                    contentColor = Color.White
+                ),
+                onClick = {
+                    elapsedTimeViewModel.fetchData(
+                        timestamp1 = selectedActivity.value!!.createdAt.seconds,
+                        timestamp2 = selectedActivity.value!!.completedAt!!.seconds
+                    )
+                }
+            ) {
+                Text(text = "Check completion time")
+            }
+        }
+
+        when (val result = elapsedTime.value) {
+            is NetworkResponse.Error -> {
+                Text(text = result.message)
+            }
+
+            NetworkResponse.Loading -> {
+                Spacer(modifier = Modifier.height(16.dp))
+                checked = true
+                CircularProgressIndicator()
+            }
+
+            is NetworkResponse.Success -> {
+                Text(
+                    text = "Time to complete:",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                ElapsedTimeCards(
+                    days = result.data.days,
+                    hours = result.data.hours,
+                    minutes = result.data.minutes
+                )
+            }
+
+            null -> {}
+        }
+    }
+}
+
+
+@Composable
 fun ElapsedTimeCards(days: String, hours: String, minutes: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -102,27 +170,27 @@ fun ElapsedTimeCards(days: String, hours: String, minutes: String) {
 fun ElapsedTimeCard(value: String, label: String) {
     Card(
         modifier = Modifier
-            .width(100.dp)
+            .width(90.dp)
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = value.toString(),
+                text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center
             )
         }

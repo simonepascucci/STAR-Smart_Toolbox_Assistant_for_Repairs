@@ -28,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -70,85 +71,110 @@ fun ActivityPage(
 ) {
 
     var selectedItem by remember { mutableIntStateOf(1) } // 0: Toolbox, 1: Activity Home, 2: Ask Gemini
+    val selectedActivity = activityViewModel.selectedActivity.observeAsState()
 
-    Scaffold(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
-        topBar = {
-            Banner()
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF363737),
-            ) {
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            Icons.Default.Build,
-                            contentDescription = "Toolbox",
-                            modifier = Modifier.size(32.dp),
-                            tint = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)
+    if (selectedActivity.value == null) {
+        CircularProgressIndicator()
+    } else {
+        Scaffold(modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+            topBar = {
+                Banner()
+            },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = Color(0xFF363737),
+                ) {
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Default.Build,
+                                contentDescription = "Toolbox",
+                                modifier = Modifier.size(32.dp),
+                                tint = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        label = {
+                            Text(
+                                "Toolbox",
+                                color = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        selected = selectedItem == 0,
+                        enabled = selectedActivity.value!!.status != "PAUSED",
+                        onClick = { selectedItem = 0 },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color(0xFF505050)
                         )
-                    },
-                    label = { Text("Toolbox", color = if (selectedItem == 0) Color.White else Color(0xFFC5C5C5)) },
-                    selected = selectedItem == 0,
-                    onClick = { selectedItem = 0 },
-                    colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Color(0xFF505050)
                     )
-                )
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            Icons.Filled.Home,
-                            contentDescription = "Activity Home",
-                            modifier = Modifier.size(32.dp),
-                            tint = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                Icons.Filled.Home,
+                                contentDescription = "Activity Home",
+                                modifier = Modifier.size(32.dp),
+                                tint = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        label = {
+                            Text(
+                                "Activity Home",
+                                color = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        selected = selectedItem == 1,
+                        onClick = { selectedItem = 1 },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color(0xFF505050)
                         )
-                    },
-                    label = { Text("Activity Home", color = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)) },
-                    selected = selectedItem == 1,
-                    onClick = { selectedItem = 1 },
-                    colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Color(0xFF505050)
                     )
-                )
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painterResource(R.drawable.geministar),
-                            contentDescription = "Ask Gemini",
-                            modifier = Modifier.size(32.dp),
-                            tint = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                painterResource(R.drawable.geministar),
+                                contentDescription = "Ask Gemini",
+                                modifier = Modifier.size(32.dp),
+                                tint = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        label = {
+                            Text(
+                                "Ask Gemini",
+                                color = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)
+                            )
+                        },
+                        selected = selectedItem == 2,
+                        onClick = { selectedItem = 2 },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color(0xFF505050)
                         )
-                    },
-                    label = { Text("Ask Gemini", color = if (selectedItem == 2) Color.White else Color(0xFFC5C5C5)) },
-                    selected = selectedItem == 2,
-                    onClick = { selectedItem = 2 },
-                    colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Color(0xFF505050)
                     )
-                )
+                }
             }
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars)
-        ) {
-            Column (
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .align(Alignment.TopCenter)
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .windowInsetsPadding(WindowInsets.statusBars)
             ) {
-                if (selectedItem == 1) {
-                    ActivityHomePage(activityViewModel, navController, elapsedTimeViewModel)
-                }
-                if (selectedItem == 2) {
-                    GeminiChatPage(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),activityViewModel, chatViewModel)
-                }
-                if (selectedItem == 0) {
-                    ToolboxPage()
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .align(Alignment.TopCenter)
+                ) {
+                    if (selectedItem == 1) {
+                        ActivityHomePage(activityViewModel, navController, elapsedTimeViewModel)
+                    }
+                    if (selectedItem == 2) {
+                        GeminiChatPage(
+                            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                            activityViewModel,
+                            chatViewModel
+                        )
+                    }
+                    if (selectedItem == 0) {
+                        ToolboxPage(activityViewModel)
+                    }
                 }
             }
         }
@@ -198,40 +224,50 @@ fun ActivityHomePage(
 
             }
         }
-            if (author == currentUser) {
-                StatusButtons(activityViewModel)
-            }
-            else{
-                Text(
-                    text = "Only the owner can change the activity status",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center,
-                    color = Color.Gray
-                )
-            }
-
 
             if (selectedActivity.value!!.status == "COMPLETED") {
-                Text(
-                    "Activity completed!",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                )
-                Text(text = "Here are your activity details:")
-                Text(text = "Category: ${selectedActivity.value!!.category}")
-                Text(text = "Author: ${selectedActivity.value!!.author}")
-                Text(text = "Collaborators: ${selectedActivity.value!!.collaborators}")
-                Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
-                Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
+                Column (
+                    modifier = Modifier.fillMaxSize().padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
+                    Text(
+                        "Activity completed!",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        color = Color(0xFF16590B)
+                    )
+                    Text(text = "Here are your activity details:")
+                    Text(text = "Category: ${selectedActivity.value!!.category}")
+                    Text(text = "Author: ${selectedActivity.value!!.author}")
+                    Text(text = "Collaborators: ${selectedActivity.value!!.collaborators}")
+                    Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
+                    Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
+                    CompletionTime(activityViewModel, elapsedTimeViewModel)
+                }
+
             }
             else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    item {
+                        if (author == currentUser) {
+                            StatusButtons(activityViewModel)
+                        }
+                        else{
+                            Text(
+                                text = "Only the owner can change the activity status",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                     item {
                         elapsedTimeViewModel.resetElapsedTime()
                         ElapsedTime(activityViewModel, elapsedTimeViewModel)
@@ -249,6 +285,7 @@ fun ActivityHomePage(
             }
     }
 }
+
 
 @Composable
 fun StatusButtons(activityViewModel: ActivityViewModel) {
@@ -320,6 +357,8 @@ fun StatusButtons(activityViewModel: ActivityViewModel) {
                     Text(text = "Complete")
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text="Toolbox is not accessible while the activity is paused!", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
         }
 
         "completed" -> {

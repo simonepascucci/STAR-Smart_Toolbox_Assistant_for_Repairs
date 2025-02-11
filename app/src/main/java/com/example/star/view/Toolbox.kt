@@ -23,7 +23,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -44,7 +43,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.star.R
@@ -53,6 +51,7 @@ import com.example.star.view.tools.ARRuler
 import com.example.star.view.tools.LevelPage
 import com.example.star.view.tools.PhotosPage
 import com.example.star.view.tools.VibrationMeterPage
+import com.example.star.viewmodel.ActivityViewModel
 
 sealed class ToolIcon {
     data class DrawableIcon(val id: Int) : ToolIcon()
@@ -63,7 +62,7 @@ data class ToolItem(val name: String, val icon: ToolIcon)
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
-fun ToolboxPage() {
+fun ToolboxPage(activityViewModel: ActivityViewModel) {
     var torchEnabled by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val cameraManager = remember { context.getSystemService(Context.CAMERA_SERVICE) as CameraManager }
@@ -162,9 +161,9 @@ fun ToolboxPage() {
                 when (selectedTool!!.name) {
                     "Level" -> LevelPage()
                     "Vibration Meter" -> VibrationMeterPage()
-                    "Ruler" -> ARRuler()
+                    "Measuring Tape" -> ARRuler()
                     "Distance" -> ARDistance()
-                    "Photos" -> PhotosPage()
+                    "Photos" -> PhotosPage(activityViewModel)
                 }
             }
         }
@@ -259,11 +258,4 @@ fun ToolNameTitle(title: String) {
             )
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@Preview(showBackground = true)
-@Composable
-fun ToolboxPagePreview() {
-    ToolboxPage()
 }

@@ -1,9 +1,8 @@
 package com.example.star.view.tools
 
 import android.annotation.SuppressLint
-import android.os.Build
+import android.util.Log
 import android.view.MotionEvent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -26,7 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
@@ -45,8 +48,6 @@ import io.github.sceneview.rememberView
 import kotlinx.coroutines.delay
 import kotlin.math.sqrt
 
-@SuppressLint("DefaultLocale")
-@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun ARRuler() {
     val engine = rememberEngine()
@@ -65,6 +66,7 @@ fun ARRuler() {
     var showNoPlaneMessage by remember { mutableStateOf(false) }
 
     fun clearScreen() {
+        Log.d("ARRuler", "clearScreen called")
         anchors.clear()
         screenPositions = emptyList()
         tapPositions = emptyList()
@@ -76,6 +78,30 @@ fun ARRuler() {
         if (showNoPlaneMessage) {
             delay(3000)
             showNoPlaneMessage = false
+        }
+    }
+
+    // Lifecycle management
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    Log.d("ARRuler", "Page created")
+                    // Initialization logic here if needed
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    Log.d("ARRuler", "Page destroyed")
+                    clearScreen()
+                    // Cleanup logic here
+                    engine.destroy()
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -116,11 +142,7 @@ fun ARRuler() {
                         if (hitOnPlane != null) {
                             val anchor = hitOnPlane.createAnchorOrNull()
                             if (anchor != null) {
-                                if (anchors.isEmpty()) {
-                                    anchors.clear()
-                                    screenPositions = emptyList()
-                                    tapPositions = emptyList()
-                                }
+                                Log.d("ARRuler", "Anchor created: ${anchor.pose.translation[0]}, ${anchor.pose.translation[1]}, ${anchor.pose.translation[2]}")
                                 anchors.add(anchor)
                                 screenPositions = screenPositions + Offset(e.x, e.y)
                                 tapPositions = tapPositions + Offset(e.x, e.y)
@@ -171,7 +193,9 @@ fun ARRuler() {
         Column(modifier = Modifier
             .align(Alignment.TopEnd)
             .padding(16.dp)) {
-            Button(colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1C)), onClick = { clearScreen() }) {
+            Button(colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD25D1F)),
+                onClick = { clearScreen() }
+            ) {
                 Text("Clear")
             }
         }

@@ -2,6 +2,7 @@ package com.example.star
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,11 +27,16 @@ import com.example.star.viewmodel.ChatViewModel
 import com.example.star.viewmodel.ElapsedTimeViewModel
 import com.example.star.viewmodel.UserViewModel
 import com.google.firebase.FirebaseApp
+import org.opencv.android.OpenCVLoader
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+        if (!OpenCVLoader.initLocal()){
+            Toast.makeText(this, "OpenCV Load Failed", Toast.LENGTH_SHORT).show()
+        }
         enableEdgeToEdge()
 
         setContent {
