@@ -49,8 +49,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -226,62 +229,100 @@ fun ActivityHomePage(
         }
 
             if (selectedActivity.value!!.status == "COMPLETED") {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxSize().padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        "Activity completed!",
+                        text = "Activity completed!",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
                         color = Color(0xFF16590B)
                     )
-                    Text(text = "Here are your activity details:")
-                    Text(text = "Category: ${selectedActivity.value!!.category}")
-                    Text(text = "Author: ${selectedActivity.value!!.author}")
-                    Text(text = "Collaborators: ${selectedActivity.value!!.collaborators}")
-                    Text(text = "Created: ${selectedActivity.value!!.createdAt.toDate()}")
-                    Text(text = "Completed: ${selectedActivity.value!!.completedAt!!.toDate()}")
+                    Text(
+                        text = "Here are your activity details:",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(buildAnnotatedString {
+                        append("Author: ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(selectedActivity.value!!.author)
+                        }
+                    })
+                    Text(buildAnnotatedString {
+                        append("Category: ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(selectedActivity.value!!.category)
+                        }
+                    })
+                    if (selectedActivity.value!!.collaborators.isNotEmpty()){
+                        Text(buildAnnotatedString {
+                            append("Collaborators: ")
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                append(selectedActivity.value!!.collaborators.joinToString(",\n"))
+                            }
+                        })
+                    } else {
+                        Text(buildAnnotatedString {
+                            append("Collaborators: ")
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                append(" / ")
+                            }
+                        })
+                    }
+                    Text(buildAnnotatedString {
+                        append("Created: ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(selectedActivity.value!!.createdAt.toDate().toString().removeSuffix(" GMT+01:00 2025"))
+                        }
+                    })
+                    Text(buildAnnotatedString {
+                        append("Completed: ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append(selectedActivity.value!!.completedAt!!.toDate().toString().removeSuffix(" GMT+01:00 2025"))
+                        }
+                    })
                     CompletionTime(activityViewModel, elapsedTimeViewModel)
                 }
-
             }
             else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    item {
-                        if (author == currentUser) {
-                            StatusButtons(activityViewModel)
-                        }
-                        else{
-                            Text(
-                                text = "Only the owner can change the activity status",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 18.sp,
-                                textAlign = TextAlign.Center,
-                                color = Color.Gray
-                            )
-                        }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    if (author == currentUser) {
+                        StatusButtons(activityViewModel)
                     }
-                    item {
-                        elapsedTimeViewModel.resetElapsedTime()
-                        ElapsedTime(activityViewModel, elapsedTimeViewModel)
-                    }
-                    item {
-                        HomePageSensorsReading()
-                    }
-                    item {
-                        Collaborators(activityViewModel)
-                    }
-                    item {
-                        MoreOptions(activityViewModel, navController)
+                    else{
+                        Text(
+                            text = "Only the owner can change the activity status",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray
+                        )
                     }
                 }
+                item {
+                    elapsedTimeViewModel.resetElapsedTime()
+                    ElapsedTime(activityViewModel, elapsedTimeViewModel)
+                }
+                item {
+                    HomePageSensorsReading()
+                }
+                item {
+                    Collaborators(activityViewModel)
+                }
+                item {
+                    MoreOptions(activityViewModel, navController)
+                }
+            }
             }
     }
 }
