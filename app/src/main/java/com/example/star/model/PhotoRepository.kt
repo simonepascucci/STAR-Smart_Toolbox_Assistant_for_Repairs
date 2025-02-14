@@ -1,7 +1,6 @@
 package com.example.star.model
 
 import android.content.Context
-import android.util.Log
 import com.example.star.model.room.AppDatabase
 import com.example.star.model.room.PhotoDao
 import com.example.star.model.room.PhotoEntity

@@ -3,7 +3,6 @@ package com.example.star.viewmodel
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.star.model.PhotoRepository
 import com.example.star.model.room.BitmapConverter
-import com.example.star.model.room.PhotoDao
 import com.example.star.model.room.PhotoEntity
 import kotlinx.coroutines.launch
 

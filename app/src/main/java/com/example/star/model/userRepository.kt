@@ -13,7 +13,7 @@ data class UserData(
 class UserRepository {
 
     private val db = Firebase.firestore
-    private val TAG = "UserRepository"
+    private val tag = "UserRepository"
 
     suspend fun fetchUserData(userEmail: String): UserData {
         return try {
@@ -24,11 +24,11 @@ class UserRepository {
                 val userData = document.toObject(UserData::class.java) // Convert to UserData
                 userData ?: UserData("", "") // Return extracted data or empty UserData
             } else {
-                Log.d(TAG, "No user found with email: $userEmail")
+                Log.d(tag, "No user found with email: $userEmail")
                 UserData("", "") // Return empty user if not found
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting user data", e)
+            Log.e(tag, "Error getting user data", e)
             UserData("", "") // Return empty user on error
         }
     }

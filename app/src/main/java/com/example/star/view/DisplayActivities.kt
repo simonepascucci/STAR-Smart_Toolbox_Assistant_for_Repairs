@@ -73,7 +73,7 @@ import com.example.star.viewmodel.ActivityViewModel
 fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
     val context = LocalContext.current
 
-    val categories = listOf("Electrical", "Mechanical", "Plumbing", "Other")
+    val categories = listOf("Electrical", "Gardening", "Home decor", "Mechanical","Painting", "Plumbing", "Smart home setup", "Wood working","Other")
     var activityName by remember { mutableStateOf("") }
     var activityCategory by remember { mutableStateOf(categories[0]) }
     var expanded by remember { mutableStateOf(false) }

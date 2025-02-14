@@ -8,7 +8,7 @@ import com.example.star.model.UserData
 import com.example.star.model.UserRepository
 import kotlinx.coroutines.launch
 
-class UserViewModel() : ViewModel() {
+class UserViewModel : ViewModel() {
 
     private val userRepository: UserRepository = UserRepository()
 

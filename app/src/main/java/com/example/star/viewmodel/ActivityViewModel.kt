@@ -110,8 +110,8 @@ class ActivityViewModel : ViewModel() {
 }
 
 sealed class AddCollaboratorResult {
-    object Success : AddCollaboratorResult()
-    object Failure : AddCollaboratorResult()
-    object Loading : AddCollaboratorResult()
-    object Idle : AddCollaboratorResult()
+    data object Success : AddCollaboratorResult()
+    data object Failure : AddCollaboratorResult()
+    data object Loading : AddCollaboratorResult()
+    data object Idle : AddCollaboratorResult()
 }
