@@ -287,6 +287,7 @@ fun ActivityHomePage(
                         }
                     })
                     CompletionTime(activityViewModel, elapsedTimeViewModel)
+                    MoreOptions(activityViewModel, navController)
                 }
             }
             else {
