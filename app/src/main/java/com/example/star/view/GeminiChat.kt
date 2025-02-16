@@ -113,7 +113,7 @@ fun MessageList(modifier: Modifier, messageList: List<GeminiMessageModel>) {
                 contentDescription = "Ask Gemini",
                 tint = Color(0xFF627DD9)
             )
-            Text(text = "Let me help you with your repair!")
+            Text(text = "Let me help you with your project!")
         }
     } else {
         LazyColumn(

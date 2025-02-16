@@ -120,7 +120,7 @@ fun ActivityPage(
                         },
                         label = {
                             Text(
-                                "Activity Home",
+                                "Project Home",
                                 color = if (selectedItem == 1) Color.White else Color(0xFFC5C5C5)
                             )
                         },
@@ -194,7 +194,7 @@ fun ActivityHomePage(
     val selectedActivity = activityViewModel.selectedActivity.observeAsState()
 
     if (selectedActivity.value == null) {
-        Text("No activity selected")
+        Text("No project selected")
         return
     }
 
@@ -234,7 +234,7 @@ fun ActivityHomePage(
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        text = "Activity completed!",
+                        text = "Project completed!",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge,
@@ -243,7 +243,7 @@ fun ActivityHomePage(
                         color = Color(0xFF16590B)
                     )
                     Text(
-                        text = "Here are your activity details:",
+                        text = "Here are your project details:",
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -400,7 +400,7 @@ fun StatusButtons(activityViewModel: ActivityViewModel) {
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text="Toolbox is not accessible while the activity is paused!", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
+            Text(text="Toolbox is not accessible while the project is paused!", textAlign = TextAlign.Center, modifier = Modifier.padding(8.dp))
         }
 
         "completed" -> {
@@ -457,7 +457,7 @@ fun MoreOptions(activityViewModel: ActivityViewModel, navController: NavHostCont
                     ),
                     border = BorderStroke(1.dp, Color.Red)
                 ) {
-                    Text(text = "Delete this activity")
+                    Text(text = "Delete this project")
                 }
             } else {
                 OutlinedButton(
@@ -480,7 +480,7 @@ fun MoreOptions(activityViewModel: ActivityViewModel, navController: NavHostCont
             onDismissRequest = { showDeleteDialog = false },
             containerColor = Color(0xFFEEEEEE),
             title = { Text("Delete: ${selectedActivity.value!!.name}") },
-            text = { Text("Are you sure you want to delete this activity? This action is irreversible.") },
+            text = { Text("Are you sure you want to delete this project? This action is irreversible.") },
             confirmButton = {
                 Button(
                     onClick = {

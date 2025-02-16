@@ -12,8 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -95,12 +100,15 @@ fun LoginPage(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCo
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                RadioButton(
-                    selected = passwordVisible,
-                    onClick = {
-                        passwordVisible = !passwordVisible
-                    }
-                )
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible }
+                ) {
+                    Icon(
+                        imageVector = if (!passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        tint = Color.Gray
+                    )
+                }
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF16590B),

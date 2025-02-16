@@ -88,7 +88,7 @@ fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
         OutlinedTextField(
             value = activityName,
             onValueChange = { activityName = it },
-            label = { Text("Activity Name") },
+            label = { Text("Project Name") },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             colors = OutlinedTextFieldDefaults.colors(
@@ -107,7 +107,7 @@ fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
                 value = activityCategory,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Activity Category") },
+                label = { Text("Project Category") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF16590B),
@@ -145,7 +145,7 @@ fun CreateNewActivity(email: String, activityViewModel: ActivityViewModel) {
                     status = "STARTED"
                 )
 
-                Toast.makeText(context,"Activity created", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"Project created", Toast.LENGTH_SHORT).show()
                 activityName = ""
                 activityCategory = ""
                 activityViewModel.disableForm()
@@ -204,7 +204,7 @@ fun DisplayActivities(
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
                         Text(
-                            text = "You currently have ${userActivities.size} activities:",
+                            text = "You currently have ${userActivities.size} projects:",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(8.dp)
@@ -212,15 +212,15 @@ fun DisplayActivities(
                     }
                     if (userActivities.isEmpty()) {
                         item {
-                            Text(text = "No activities found.", modifier = Modifier.padding(8.dp))
+                            Text(text = "No projects found.", modifier = Modifier.padding(8.dp))
                             Row(modifier = Modifier.padding(8.dp)) {
                                 Text(text = "Click on ")
                                 Icon(
                                     imageVector = Icons.Default.AddCircle,
-                                    contentDescription = "info",
+                                    contentDescription = "add",
                                     tint = Color(0xFFD25D1C)
                                 )
-                                Text(text = " to add a new activity.")
+                                Text(text = " to create a new project.")
                             }
                         }
                     } else {
@@ -235,7 +235,7 @@ fun DisplayActivities(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "You are collaborating in the following activities:",
+                            text = "You are collaborating in the following projects:",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(8.dp)
@@ -244,7 +244,7 @@ fun DisplayActivities(
                     if (userCollaborations.isEmpty()) {
                         item {
                             Text(
-                                text = "You are not collaborating in any activity.",
+                                text = "You are not collaborating in any project.",
                                 modifier = Modifier.padding(8.dp)
                             )
                         }
@@ -341,7 +341,7 @@ fun ActivityCard(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16590B)),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Enter Activity", textAlign = TextAlign.End)
+                    Text(text = "Enter Project", textAlign = TextAlign.End)
                 }
             }
         }

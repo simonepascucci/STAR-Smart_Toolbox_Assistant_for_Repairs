@@ -97,7 +97,7 @@ fun HomePage(
                 AlertDialog(
                     containerColor = Color(0xFFC5C5C5),
                     onDismissRequest = { showDialog = false },
-                    title = { Text("Do you want to add a new activity?", fontSize = 16.sp) },
+                    title = { Text("Do you want to create a new project?", fontSize = 16.sp) },
                     confirmButton = {
                         Button(
                             onClick = {

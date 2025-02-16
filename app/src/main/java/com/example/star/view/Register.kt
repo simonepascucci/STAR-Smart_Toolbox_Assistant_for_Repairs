@@ -12,8 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -111,13 +116,15 @@ fun RegistrationPage(authViewModel: AuthViewModel, userViewModel: UserViewModel,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                RadioButton(
-                    selected = confirmPasswordVisible,
-                    onClick = {
-                        passwordVisible = !passwordVisible
-                        confirmPasswordVisible = !confirmPasswordVisible
-                    }
-                )
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible }
+                ) {
+                    Icon(
+                        imageVector = if (!passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        tint = Color.Gray
+                    )
+                }
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF16590B),
@@ -138,7 +145,15 @@ fun RegistrationPage(authViewModel: AuthViewModel, userViewModel: UserViewModel,
             visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-
+                IconButton(
+                    onClick = { confirmPasswordVisible = !confirmPasswordVisible }
+                ) {
+                    Icon(
+                        imageVector = if (!confirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password",
+                        tint = Color.Gray
+                    )
+                }
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF16590B),
